@@ -1,0 +1,12 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+ideaProject {
+	javaVersion = '1.6'
+}
+
+ideaModule {
+	downloadSources = false
+	downloadJavadoc = false
+}
+
