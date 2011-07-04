@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 
 public class BarTest {
 	@Test
-	public void test1() {
+	public void exerciseWithRequiredsOnly() {
 //		Bar bar = Bar.newBuilder().initR2(2).initR1(1).build(); // won't compile
 		Bar bar = Bar.newBuilder().initR1(1).initR2(2).build();
 		assertEquals(1, bar.getR1());
@@ -18,19 +18,19 @@ public class BarTest {
 	}
 
 	@Test
-	public void test2() {
+	public void exerciseWithStandardInitializationSequence() {
 		Bar bar = Bar.newBuilder().initR1(1).initR2(2).withO1(1).withO2(2).withO3(3).build();
 		assertDataInitializedCorrectly(bar);
 	}
 
 	@Test
-	public void test3() {
+	public void exerciseWithFreeSequenceForOptionals() {
 		Bar bar = Bar.newBuilder().initR1(1).initR2(2).withO2(2).withO1(1).withO3(3).build();
 		assertDataInitializedCorrectly(bar);
 	}
 
 	@Test
-	public void test4() {
+	public void exerciseWithFreeSequenceForOptionals2() {
 		Bar bar = Bar.newBuilder().initR1(1).initR2(2).withO3(3).withO2(2).withO1(1).build();
 		assertDataInitializedCorrectly(bar);
 	}
