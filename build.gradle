@@ -10,3 +10,10 @@ ideaModule {
 	downloadJavadoc = false
 }
 
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	testCompile 'junit:junit:4.8.1'
+}
