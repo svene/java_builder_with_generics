@@ -6,6 +6,7 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'sonar'
 
 idea {
 	project {
@@ -21,8 +22,13 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	jacoco
+}
+
 dependencies {
 	testCompile 'junit:junit:4.8.1'
+	jacoco group: "org.jacoco", name: "org.jacoco.agent", version: "0.5.3.201107060350", classifier: "runtime"
 }
 
 group='org.svenehrke'
@@ -47,5 +53,26 @@ task makeRelease(dependsOn: 'uploadArchives')
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '1.0-milestone-5-20110927091445+0200'
+}
+
+sonar {
+  server {
+    url = System.getProperty("sonar.host.url") ?: "http://localhost:9000/"
+  }
+
+/*
+  database {
+    url = System.getProperty("sonar.jdbc.url") ?: "jdbc:derby://localhost:1527/sonar"
+    driverClassName = System.getProperty("sonar.jdbc.driver") ?: "org.apache.derby.jdbc.ClientDriver"
+    username = System.getProperty("sonar.jdbc.username") ?: "sonar"
+    password = System.getProperty("sonar.jdbc.password") ?: "sonar"
+  }
+*/
+
+  project {
+    withProjectProperties { props ->
+      props["sonar.core.codeCoveragePlugin"] = "jacoco"
+    }
+  }
 }
 
