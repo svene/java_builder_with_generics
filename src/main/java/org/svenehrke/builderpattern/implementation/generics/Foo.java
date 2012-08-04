@@ -4,8 +4,9 @@ package org.svenehrke.builderpattern.implementation.generics;
  * Example objects constructed with Builder pattern for objects with required fields
  * Intended to construct immutable objects.
  *
- * Advantage: sequence in which attributes are initialized is open to user as long as all required fields are initialized
- * Disadvantage: free sequence of advantage might be a disadvantage because there is no code completion help on what still needs to be initialized.
+ * Features:
+ * - sequence in which attributes are initialized is open to user as long as all required fields are initialized
+ * - free sequence might be a disadvantage because there is no code completion help on what still needs to be initialized.
  *
  * Sven Ehrke
  */
