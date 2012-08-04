@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 public class BarTest {
 	@Test
 	public void exerciseWithRequiredsOnly() {
-//		Bar bar = Bar.newBuilder().initR2(2).initR1(1).build(); // won't compile
 		Bar bar = Bar.newBuilder().initR1(1).initR2(2).build();
 		assertEquals(1, bar.getR1());
 		assertEquals(2, bar.getR2());

@@ -7,8 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class FooTest {
 	@Test
 	public void exerciseWithRequiredsOnly() {
-//		Foo7 foo = new Foo(Foo.Builder.newInstance().initR1(1).initR2(2));
-		Foo foo = new Foo(Foo.newBuilder().initR2(2).initR1(1));
+		Foo foo = new Foo(Foo.newBuilder().Required2(2).Required1(1));
 		assertEquals(1, foo.getR1());
 		assertEquals(2, foo.getR2());
 
@@ -19,35 +18,28 @@ public class FooTest {
 
 	@Test
 	public void exerciseWithStandardInitializationSequence() {
-//		Foo foo = new Foo(Foo.newBuilder().initR1(1).initR2(2).withO1(1).withO2(2).withO3(3));
-		Foo foo = new Foo(Foo.newBuilder().initR1(1).initR2(2).withO2(2));
-		assertEquals(1, foo.getR1());
-		assertEquals(2, foo.getR2());
-
-		assertEquals(2, foo.getO2());
+		Foo foo = new Foo(Foo.newBuilder().Required1(1).Required2(2).optional2(2));
+		assertInitialization(1, 2, 0, 2, 0, foo);
 	}
 
 	@Test
 	public void exerciseWithRequiredsMixedWithOptionals() {
-//		Foo foo = new Foo(Foo.Builder.newInstance().initR1(1).withO1(1).withO2(2).withO3(3)); // won't compile
-		Foo foo = new Foo(Foo.newBuilder().initR1(1).withO1(1).withO2(2).withO3(3).initR2(2));
-		// foo = new Foo(Foo.Builder.newInstance().initR2(1).withO1(1).initR1(1).withO2(2).withO3(3)); // works
-		// foo = new Foo(Foo.Builder.newInstance().initR2(1).withO1(1).initR1(1).withO2(2).withO3(3).withO3(3)); // works
-		assertEquals(1, foo.getR1());
-		assertEquals(2, foo.getR2());
-
-		assertEquals(1, foo.getO1());
-		assertEquals(2, foo.getO2());
-		assertEquals(3, foo.getO3());
-
+		Foo foo = new Foo(Foo.newBuilder().Required1(1).optional1(1).optional2(2).optional3(3).Required2(2));
+		assertInitialization(1, 2, 1, 2, 3, foo);
 	}
 
 	@Test
 	public void exerciseWithOptionalsFirst() {
-		Foo foo = new Foo(Foo.newBuilder().withO1(3).initR1(1).initR2(2));
-		assertEquals(1, foo.getR1());
-		assertEquals(2, foo.getR2());
+		Foo foo = new Foo(Foo.newBuilder().optional1(3).Required1(1).Required2(2));
+		assertInitialization(1, 2, 3, 0, 0, foo);
+	}
 
-		assertEquals(3, foo.getO1());
+	private void assertInitialization(int r1, int r2, int o1, int o2, int o3, Foo foo) {
+		assertEquals(r1, foo.getR1());
+		assertEquals(r2, foo.getR2());
+
+		assertEquals(o1, foo.getO1());
+		assertEquals(o2, foo.getO2());
+		assertEquals(o3, foo.getO3());
 	}
 }
