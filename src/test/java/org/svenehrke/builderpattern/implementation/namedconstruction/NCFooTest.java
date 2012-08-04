@@ -57,7 +57,7 @@ public class NCFooTest {
 	}
 
 	@Test
-	public void create_new_from_existing_1() {
+	public void create_new_from_existing() {
 		NCFoo foo, foo1, foo2, foo3, foo4, foo5;
 		foo = NCFoo.required1("1").required2("2").required3("3").newOptional1("o1").newOptional2("o2").newOptional3("o3");
 		verifyInitialization("1a", "2", "3", "o1", "o2", "o3", foo1 = foo.newRequired1("1a"));
