@@ -26,6 +26,9 @@ public class Foo {
 	public static Builder<NOK, NOK> newBuilder() {
 		return new Builder<NOK, NOK>(new FooData());
 	}
+	public static Builder<OK, OK> newBuilder(Foo foo) {
+		return new Builder<OK, OK>(foo.data);
+	}
 
 	public static class Builder<R1, R2> {
 		private final FooData data;
