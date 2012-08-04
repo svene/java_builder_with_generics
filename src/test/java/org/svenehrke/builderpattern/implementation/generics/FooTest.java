@@ -8,19 +8,12 @@ import static org.junit.Assert.assertNotSame;
 public class FooTest {
 	@Test
 	public void exerciseWithRequiredsOnly() {
-		Foo foo = new Foo(Foo.newBuilder().Required2(2).Required1(1));
-		assertEquals(1, foo.getRequired1());
-		assertEquals(2, foo.getRequired2());
-
-		assertEquals(0, foo.getOptional1());
-		assertEquals(0, foo.getOptional2());
-		assertEquals(0, foo.getOptional3());
+		verifyInitialization(1, 2, 0, 0, 0, new Foo(Foo.newBuilder().Required2(2).Required1(1)));
 	}
 
 	@Test
 	public void exerciseWithStandardInitializationSequence() {
-		Foo foo = new Foo(Foo.newBuilder().Required1(1).Required2(2).optional2(2));
-		verifyInitialization(1, 2, 0, 2, 0, foo);
+		verifyInitialization(1, 2, 0, 2, 0, new Foo(Foo.newBuilder().Required1(1).Required2(2).optional2(2)));
 	}
 
 	@Test
