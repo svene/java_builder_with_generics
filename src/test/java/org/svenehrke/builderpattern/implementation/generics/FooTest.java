@@ -8,12 +8,12 @@ public class FooTest {
 	@Test
 	public void exerciseWithRequiredsOnly() {
 		Foo foo = new Foo(Foo.newBuilder().Required2(2).Required1(1));
-		assertEquals(1, foo.getR1());
-		assertEquals(2, foo.getR2());
+		assertEquals(1, foo.getRequired1());
+		assertEquals(2, foo.getRequired2());
 
-		assertEquals(0, foo.getO1());
-		assertEquals(0, foo.getO2());
-		assertEquals(0, foo.getO3());
+		assertEquals(0, foo.getOptional1());
+		assertEquals(0, foo.getOptional2());
+		assertEquals(0, foo.getOptional3());
 	}
 
 	@Test
@@ -35,11 +35,11 @@ public class FooTest {
 	}
 
 	private void assertInitialization(int r1, int r2, int o1, int o2, int o3, Foo foo) {
-		assertEquals(r1, foo.getR1());
-		assertEquals(r2, foo.getR2());
+		assertEquals(r1, foo.getRequired1());
+		assertEquals(r2, foo.getRequired2());
 
-		assertEquals(o1, foo.getO1());
-		assertEquals(o2, foo.getO2());
-		assertEquals(o3, foo.getO3());
+		assertEquals(o1, foo.getOptional1());
+		assertEquals(o2, foo.getOptional2());
+		assertEquals(o3, foo.getOptional3());
 	}
 }

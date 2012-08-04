@@ -15,12 +15,12 @@ public class Foo {
 	public Foo(Builder<OK, OK> aBuilder) {
 		data = aBuilder.data;
 	}
-	public int getR1() { return data.required1; }
-	public int getR2() { return data.required2; }
+	public int getRequired1() { return data.required1; }
+	public int getRequired2() { return data.required2; }
 
-	public int getO1() { return data.optional1; }
-	public int getO2() { return data.optional2; }
-	public int getO3() { return data.optional3; }
+	public int getOptional1() { return data.optional1; }
+	public int getOptional2() { return data.optional2; }
+	public int getOptional3() { return data.optional3; }
 
 	public static Builder<NOK, NOK> newBuilder() {
 		return new Builder<NOK, NOK>(new FooData());
