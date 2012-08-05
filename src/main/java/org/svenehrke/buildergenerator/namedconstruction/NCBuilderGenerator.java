@@ -50,6 +50,12 @@ public class NCBuilderGenerator {
 			sa.add(String.format("\t\t}"));
 			idx++;
 		}
+
+		// Field assignments:
+		for (AttributeDefinition ad : inputData.attributeDefinitions) {
+			sa.add(String.format("\t\tthis.%s = %s;", ad.getName(), ad.getName()));
+		}
+
 		sa.add("\t}");
 
 		return sa;

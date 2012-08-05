@@ -54,6 +54,7 @@ public class NCBuilderGeneratorTest {
 				"\t\tif (required1 == null) {",
 				"\t\t\tthrow new IllegalArgumentException(\"parameter 'required1' must not be null\");",
 				"\t\t}",
+				"\t\tthis.required1 = required1;",
 				"\t}",
 				"}"
 			),
@@ -82,6 +83,11 @@ public class NCBuilderGeneratorTest {
 				"\t\tif (required1 == null) {",
 				"\t\t\tthrow new IllegalArgumentException(\"parameter 'required1' must not be null\");",
 				"\t\t}",
+				"\t\tthis.required1 = required1;",
+				"\t\tthis.required2 = required2;",
+				"\t\tthis.optional1 = optional1;",
+				"\t\tthis.optional2 = optional2;",
+				"\t\tthis.optional3 = optional3;",
 				"\t}",
 				"}"
 			),
