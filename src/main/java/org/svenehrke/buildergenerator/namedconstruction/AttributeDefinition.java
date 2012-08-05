@@ -47,6 +47,9 @@ public class AttributeDefinition {
 	public String getName() {
 		return name;
 	}
+	public String getCapitalizedName() {
+		return name.toUpperCase().substring(0, 1).concat(name.substring(1));
+	}
 
 	public boolean isPrimitive() {
 		return PRIMITIVES.contains(type);

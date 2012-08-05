@@ -27,6 +27,7 @@ public class NCBuilderGenerator {
 		sa.add(attributeLines());
 		sa.addAll(constructor());
 		sa.addAll(getters());
+		sa.addAll(newInitilizers());
 
 		sa.add("}");
 		return toText(sa);
@@ -86,8 +87,34 @@ public class NCBuilderGenerator {
 
 	public List<String> getters() {
 		List<String> result = new ArrayList<String>();
+		if (inputData.attributeDefinitions.size() > 0) {
+			result.add("");
+		}
 		for (AttributeDefinition ad : inputData.attributeDefinitions) {
-			result.add(String.format("\tpublic %s get%s() { return %s; }", ad.getType(), ad.getName().toUpperCase().substring(0, 1).concat(ad.getName().substring(1)), ad.getName()));
+			result.add(String.format("\tpublic %s get%s() { return %s; }", ad.getType(), ad.getCapitalizedName(), ad.getName()));
+		}
+		return result;
+	}
+
+	public List<String> newInitilizers() {
+		List<String> result = new ArrayList<String>();
+		int i = 0;
+		if (inputData.attributeDefinitions.size() > 0) {
+			result.add("");
+		}
+		for (AttributeDefinition ad : inputData.attributeDefinitions) {
+			result.add(String.format("\tpublic %s new%s(%s value) {", inputData.className, ad.getCapitalizedName(), ad.getType()));
+
+			String s = "";
+			int j = 0;
+			for (AttributeDefinition ad2 : inputData.attributeDefinitions) {
+				if (j > 0) s += ", ";
+				s += i == j ? "value" : ad2.getName();
+				j++;
+			}
+			result.add(String.format("\t\treturn new %s(%s);", inputData.className, s));
+			result.add("\t}");
+			i++;
 		}
 		return result;
 	}
