@@ -10,6 +10,9 @@ public class NCBuilderGeneratorTest {
 	public void generate_Foo() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
+				"/* Source:",
+				"Foo",
+				"*/",
 				"public final class Foo {",
 				"",
 				"\tprivate Foo() {",
@@ -23,6 +26,9 @@ public class NCBuilderGeneratorTest {
 	public void generate_Bar() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
+				"/* Source:",
+				"Bar",
+				"*/",
 				"public final class Bar {",
 				"",
 				"\tprivate Bar() {",
@@ -37,6 +43,10 @@ public class NCBuilderGeneratorTest {
 	public void generate_Foo_with_required() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
+				"/* Source:",
+				"Foo",
+				"R,String,required1",
+				"*/",
 				"public final class Foo {",
 				"\tprivate final String required1;",
 				"",
@@ -53,6 +63,14 @@ public class NCBuilderGeneratorTest {
 	public void generate_Foo_with_2required_3optional() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
+				"/* Source:",
+				"Foo",
+				"R,String,required1",
+				"R,int,required2",
+				"O,BigDecimal,optional1",
+				"O,BigInteger,optional2",
+				"O,double,optional3",
+				"*/",
 				"public final class Foo {",
 				"\tprivate final String required1;",
 				"\tprivate final int required2;",

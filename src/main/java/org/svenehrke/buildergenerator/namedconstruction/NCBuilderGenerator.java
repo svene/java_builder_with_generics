@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class NCBuilderGenerator {
+	private final List<String> lines;
 	private final InputData inputData;
 
 	// For testing:
@@ -12,19 +13,27 @@ public class NCBuilderGenerator {
 		this(Arrays.asList(lines));
 	}
 	public NCBuilderGenerator(List<String> lines) {
+		this.lines = lines;
 		inputData = InputData.parse(lines);
 	}
 
 	public String generate() {
-		return "public final class " + inputData.className + " {\n"
-			+ attributeLines() + "\n"
-			+ constructor()
-			+ "}\n";
+		List<String> sa = new ArrayList<String>();
+		sa.add("/* Source:");
+		sa.addAll(lines);
+		sa.add("*/");
+		sa.add("public final class " + inputData.className + " {");
+		sa.add(attributeLines());
+		sa.addAll(constructor());
+		sa.add("}");
+		return toText(sa);
 	}
 
-	private String constructor() {
+	private List<String> constructor() {
 		List<String> sa = new ArrayList<String>();
 		String s = String.format("\tprivate %s(", inputData.className);
+
+		// Field declarations:
 		int idx = 0;
 		for (AttributeDefinition ad : inputData.attributeDefinitions) {
 			s += String.format("%s%s %s", idx > 0 ? ", " : "", ad.getType(), ad.getName());
@@ -32,9 +41,10 @@ public class NCBuilderGenerator {
 		}
 		s += ") {";
 		sa.add(s);
+
+		// NotNull precondition:
 		for (AttributeDefinition ad : inputData.attributeDefinitions) {
 			if (!ad.isRequired() || ad.isPrimitive()) continue;
-			// NotNull precondition:
 			sa.add(String.format("\t\tif (%s == null) {", ad.getName()));
 			sa.add(String.format("\t\t\tthrow new IllegalArgumentException(\"parameter '%s' must not be null\");", ad.getName()));
 			sa.add(String.format("\t\t}"));
@@ -42,7 +52,7 @@ public class NCBuilderGenerator {
 		}
 		sa.add("\t}");
 
-		return toText(sa);
+		return sa;
 	}
 
 	private String attributeLines() {
