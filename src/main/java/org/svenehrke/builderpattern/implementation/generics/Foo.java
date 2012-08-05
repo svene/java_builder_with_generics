@@ -5,8 +5,20 @@ package org.svenehrke.builderpattern.implementation.generics;
  * Intended to construct immutable objects.
  *
  * Features:
- * - sequence in which attributes are initialized is open to user as long as all required fields are initialized
- * - free sequence might be a disadvantage because there is no code completion help on what still needs to be initialized.
+ * - Guarantees at compile time that all required fields are initialized.
+ *   This is achieved by the usage of generics used in one builder class.
+ *
+ *   Advantages:
+ *
+ *   - only one builder class needed
+ *
+ *   Disadvantages:
+ *
+ *   - generic signature grows with every attribute of the class.
+ *   - Use of generics here feels a bit 'magic' and therefore goes against the keep it simple stupid (KISS) principle
+ *
+ * - sequence in which attributes are initialized is open to user as long as all required fields are initialized. This
+ *   is at the same time a disadvantage because there is no good code completion help on what still needs to be initialized.
  *
  * Sven Ehrke
  */
