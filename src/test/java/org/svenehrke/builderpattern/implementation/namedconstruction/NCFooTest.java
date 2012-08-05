@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 public class NCFooTest {
 
 	@Test
-	public void excercise_invalid_construction() throws Exception {
+	public void test_constructor_contracts() throws Exception {
 		try {
 			new NCFoo(null, null, null, null, null, null);
 			fail("IllegalArgumentException expected");
@@ -32,19 +32,19 @@ public class NCFooTest {
 	}
 
 	@Test
-	public void exerciseWithRequiredsOnly() {
+	public void example_with_requireds_only() {
 		NCFoo foo = NCFoo.required1("1").required2("2").required3("3");
 		verifyInitialization("1", "2", "3", null, null, null, foo);
 	}
 
 	@Test
-	public void exerciseWithOptionals() {
+	public void example_with_optionals() {
 		NCFoo foo = NCFoo.required1("1").required2("2").required3("3").newOptional1("o1").newOptional2("o2").newOptional3("o3");
 		verifyInitialization("1", "2", "3", "o1", "o2", "o3", foo);
 	}
 
 	@Test
-	public void create_new_from_existing_is_always_new_object() {
+	public void create_new_from_existing_always_returns_new_object() {
 		NCFoo foo, foo1, foo2, foo3, foo4, foo5;
 		foo = NCFoo.required1("1").required2("2").required3("3").newOptional1("o1").newOptional2("o2").newOptional3("o3");
 

@@ -7,17 +7,17 @@ import static org.junit.Assert.assertNotSame;
 
 public class FooTest {
 	@Test
-	public void exerciseWithRequiredsOnly() {
+	public void example_with_requireds_only() {
 		verifyInitialization(1, 2, 0, 0, 0, new Foo(Foo.newBuilder().Required2(2).Required1(1)));
 	}
 
 	@Test
-	public void exerciseWithStandardInitializationSequence() {
+	public void example_with_standard_initialization_sequence() {
 		verifyInitialization(1, 2, 0, 2, 0, new Foo(Foo.newBuilder().Required1(1).Required2(2).optional2(2)));
 	}
 
 	@Test
-	public void exerciseWithRequiredsMixedWithOptionals() {
+	public void example_with_requireds_mixed_with_optionals() {
 		Foo foo = new Foo(Foo.newBuilder().Required1(1).optional1(1).optional2(2).optional3(3).Required2(2));
 		verifyInitialization(1, 2, 1, 2, 3, foo);
 	}
@@ -29,7 +29,7 @@ public class FooTest {
 	}
 
 	@Test
-	public void create_new_from_existing_is_always_new_object() {
+	public void create_new_from_existing_always_returns_new_object() {
 		Foo foo, foo1, foo2, foo3, foo4;
 		foo = new Foo(Foo.newBuilder().optional1(3).Required1(1).Required2(2));
 
