@@ -1,5 +1,23 @@
 package org.svenehrke.builderpattern.implementation.namedconstruction;
 
+/**
+ * Example objects constructed with Builder pattern for objects with required fields
+ * Intended to construct immutable objects.
+ *
+ * Features:
+ * - Guarantees at compile time that all required fields are initialized.
+ *   This is achieved by the usage of chained builders
+ *
+ *   Advantages:
+ *
+ *   - sequence in which attributes are initialized is given by the chain of builders
+ *
+ *   Disadvantages:
+ *
+ *   - number of required internal builder classes grows with each attribute of the class to be initialized
+ *
+ * Sven Ehrke
+ */
 public class NCFoo {
 	private final String required1;
 	private final String required2;
