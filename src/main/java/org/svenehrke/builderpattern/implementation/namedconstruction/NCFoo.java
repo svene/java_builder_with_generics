@@ -31,8 +31,7 @@ public class NCFoo {
 	NCFoo(String r1, String r2, String r3) {
 		this(r1, r2, r3, null, null, null);
 	}
-	// Visible for tests:
-	NCFoo(String required1, String required2, String required3, String optional1, String optional2, String optional3) {
+	private NCFoo(String required1, String required2, String required3, String optional1, String optional2, String optional3) {
 		if (required1 == null) {
 			throw new IllegalArgumentException("Foo5.Foo5(...): parameter 'required1' must not be null");
 		}

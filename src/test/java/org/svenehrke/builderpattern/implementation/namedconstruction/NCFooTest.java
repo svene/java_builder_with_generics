@@ -9,26 +9,26 @@ public class NCFooTest {
 	@Test
 	public void test_constructor_contracts() throws Exception {
 		try {
-			new NCFoo(null, null, null, null, null, null);
+			new NCFoo(null, null, null);
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
 			assertTrue(e.getMessage().contains("parameter 'required1' must not be null"));
 		}
 		try {
-			new NCFoo("1", null, null, null, null, null);
+			new NCFoo("1", null, null);
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
 			assertTrue(e.getMessage().contains("parameter 'required2' must not be null"));
 		}
 		try {
-			new NCFoo("1", "2", null, null, null, null);
+			new NCFoo("1", "2", null);
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
 			assertTrue(e.getMessage().contains("parameter 'required3' must not be null"));
 		}
 
 		// No exception expected:
-		new NCFoo("1", "2", "3", null, null, null);
+		new NCFoo("1", "2", "3");
 	}
 
 	@Test
