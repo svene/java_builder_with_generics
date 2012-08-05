@@ -33,13 +33,13 @@ public class NCFoo {
 	}
 	private NCFoo(String required1, String required2, String required3, String optional1, String optional2, String optional3) {
 		if (required1 == null) {
-			throw new IllegalArgumentException("Foo5.Foo5(...): parameter 'required1' must not be null");
+			throw new IllegalArgumentException("parameter 'required1' must not be null");
 		}
 		if (required2 == null) {
-			throw new IllegalArgumentException("Foo5.Foo5(...): parameter 'required2' must not be null");
+			throw new IllegalArgumentException("parameter 'required2' must not be null");
 		}
 		if (required3 == null) {
-			throw new IllegalArgumentException("Foo5.Foo5(...): parameter 'required3' must not be null");
+			throw new IllegalArgumentException("parameter 'required3' must not be null");
 		}
 
 		this.required1 = required1;
