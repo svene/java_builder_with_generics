@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public class AttributeDefinition {
-	public static final HashSet<String> PRIMITIVES = new HashSet<String>(Arrays.asList("int", "double", "float"));
+	public static final HashSet<String> PRIMITIVES = new HashSet<String>(Arrays.asList("int", "double", "float", "char"));
 	private final boolean required;
 	private final String type;
 	private final String name;

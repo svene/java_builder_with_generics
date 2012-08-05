@@ -2,6 +2,7 @@ package org.svenehrke.buildergenerator.namedconstruction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class NCBuilderGenerator {
@@ -25,12 +26,14 @@ public class NCBuilderGenerator {
 		sa.add("public final class " + inputData.className + " {");
 		sa.add(attributeLines());
 		sa.addAll(constructor());
+		sa.addAll(getters());
+
 		sa.add("}");
 		return toText(sa);
 	}
 
 	private List<String> constructor() {
-		List<String> sa = new ArrayList<String>();
+		List<String> result = new ArrayList<String>();
 		String s = String.format("\tprivate %s(", inputData.className);
 
 		// Field declarations:
@@ -40,25 +43,25 @@ public class NCBuilderGenerator {
 			idx++;
 		}
 		s += ") {";
-		sa.add(s);
+		result.add(s);
 
 		// NotNull precondition:
 		for (AttributeDefinition ad : inputData.attributeDefinitions) {
 			if (!ad.isRequired() || ad.isPrimitive()) continue;
-			sa.add(String.format("\t\tif (%s == null) {", ad.getName()));
-			sa.add(String.format("\t\t\tthrow new IllegalArgumentException(\"parameter '%s' must not be null\");", ad.getName()));
-			sa.add(String.format("\t\t}"));
+			result.add(String.format("\t\tif (%s == null) {", ad.getName()));
+			result.add(String.format("\t\t\tthrow new IllegalArgumentException(\"parameter '%s' must not be null\");", ad.getName()));
+			result.add(String.format("\t\t}"));
 			idx++;
 		}
 
 		// Field assignments:
 		for (AttributeDefinition ad : inputData.attributeDefinitions) {
-			sa.add(String.format("\t\tthis.%s = %s;", ad.getName(), ad.getName()));
+			result.add(String.format("\t\tthis.%s = %s;", ad.getName(), ad.getName()));
 		}
 
-		sa.add("\t}");
+		result.add("\t}");
 
-		return sa;
+		return result;
 	}
 
 	private String attributeLines() {
@@ -81,4 +84,11 @@ public class NCBuilderGenerator {
 		return result;
 	}
 
+	public List<String> getters() {
+		List<String> result = new ArrayList<String>();
+		for (AttributeDefinition ad : inputData.attributeDefinitions) {
+			result.add(String.format("\tpublic %s get%s() { return %s; }", ad.getType(), ad.getName().toUpperCase().substring(0, 1).concat(ad.getName().substring(1)), ad.getName()));
+		}
+		return result;
+	}
 }

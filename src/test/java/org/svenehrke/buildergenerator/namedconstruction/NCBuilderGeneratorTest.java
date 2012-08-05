@@ -56,6 +56,7 @@ public class NCBuilderGeneratorTest {
 				"\t\t}",
 				"\t\tthis.required1 = required1;",
 				"\t}",
+				"\tpublic String getRequired1() { return required1; }",
 				"}"
 			),
 			new NCBuilderGenerator("Foo", "R,String,required1").generate());
@@ -89,6 +90,11 @@ public class NCBuilderGeneratorTest {
 				"\t\tthis.optional2 = optional2;",
 				"\t\tthis.optional3 = optional3;",
 				"\t}",
+				"\tpublic String getRequired1() { return required1; }",
+				"\tpublic int getRequired2() { return required2; }",
+				"\tpublic BigDecimal getOptional1() { return optional1; }",
+				"\tpublic BigInteger getOptional2() { return optional2; }",
+				"\tpublic double getOptional3() { return optional3; }",
 				"}"
 			),
 			new NCBuilderGenerator("Foo"
