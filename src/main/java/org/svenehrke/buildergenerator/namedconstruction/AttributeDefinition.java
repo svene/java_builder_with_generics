@@ -1,6 +1,10 @@
 package org.svenehrke.buildergenerator.namedconstruction;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 public class AttributeDefinition {
+	public static final HashSet<String> PRIMITIVES = new HashSet<String>(Arrays.asList("int", "double", "float"));
 	private final boolean required;
 	private final String type;
 	private final String name;
@@ -42,5 +46,9 @@ public class AttributeDefinition {
 
 	public String getName() {
 		return name;
+	}
+
+	public boolean isPrimitive() {
+		return PRIMITIVES.contains(type);
 	}
 }

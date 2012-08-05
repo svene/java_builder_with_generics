@@ -38,22 +38,4 @@ public class TestUtil {
 		return new BufferedReader(new StringReader(input));
 	}
 
-	public static String toText(String... lines) {
-		String result = "";
-		for (String line : lines) {
-			result += line + "\n";
-		}
-		return result;
-	}
-
-
-	public static String outClassLine(String aClassname) {
-		return "public final class " + aClassname + " {";
-	}
-	public static String outAttributeLine(String aType, String aAttributeName) {
-		return String.format("\tprivate final %s %s;", aType, aAttributeName);
-	}
-	public static String outEndLine() {
-		return "}";
-	}
 }

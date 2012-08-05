@@ -1,48 +1,71 @@
 package org.svenehrke.buildergenerator.namedconstruction;
 
 import org.junit.Test;
-import static org.svenehrke.TestUtil.*;
 
 import static org.junit.Assert.assertEquals;
 
 public class NCBuilderGeneratorTest {
 
 	@Test
-	public void test_outClassLine() throws Exception {
-		assertEquals("public final class Foo {", outClassLine("Foo"));
-	}
-
-	@Test
 	public void generate_Foo() throws Exception {
-		assertEquals(toText(outClassLine("Foo"), outEndLine()), new NCBuilderGenerator("Foo").generate());
+		assertEquals(
+			NCBuilderGenerator.toText(
+				"public final class Foo {",
+				"",
+				"\tprivate Foo() {",
+				"\t}",
+				"}"
+			),
+			new NCBuilderGenerator("Foo").generate());
 	}
 
 	@Test
 	public void generate_Bar() throws Exception {
-		assertEquals(toText(outClassLine("Bar"), outEndLine()), new NCBuilderGenerator("Bar").generate());
+		assertEquals(
+			NCBuilderGenerator.toText(
+				"public final class Bar {",
+				"",
+				"\tprivate Bar() {",
+				"\t}",
+				"}"
+			),
+			new NCBuilderGenerator("Bar").generate()
+		);
 	}
 
 	@Test
 	public void generate_Foo_with_required() throws Exception {
 		assertEquals(
-			toText(
-				outClassLine("Foo"),
-				outAttributeLine("String", "required1"),
-				outEndLine()
+			NCBuilderGenerator.toText(
+				"public final class Foo {",
+				"\tprivate final String required1;",
+				"",
+				"\tprivate Foo(String required1) {",
+				"\t\tif (required1 == null) {",
+				"\t\t\tthrow new IllegalArgumentException(\"parameter 'required1' must not be null\");",
+				"\t\t}",
+				"\t}",
+				"}"
 			),
 			new NCBuilderGenerator("Foo", "R,String,required1").generate());
 	}
 	@Test
 	public void generate_Foo_with_2required_3optional() throws Exception {
 		assertEquals(
-			toText(
-				outClassLine("Foo"),
-				outAttributeLine("String", "required1"),
-				outAttributeLine("int", "required2"),
-				outAttributeLine("BigDecimal", "optional1"),
-				outAttributeLine("BigInteger", "optional2"),
-				outAttributeLine("double", "optional3"),
-				outEndLine()
+			NCBuilderGenerator.toText(
+				"public final class Foo {",
+				"\tprivate final String required1;",
+				"\tprivate final int required2;",
+				"\tprivate final BigDecimal optional1;",
+				"\tprivate final BigInteger optional2;",
+				"\tprivate final double optional3;",
+				"",
+				"\tprivate Foo(String required1, int required2, BigDecimal optional1, BigInteger optional2, double optional3) {",
+				"\t\tif (required1 == null) {",
+				"\t\t\tthrow new IllegalArgumentException(\"parameter 'required1' must not be null\");",
+				"\t\t}",
+				"\t}",
+				"}"
 			),
 			new NCBuilderGenerator("Foo"
 				, "R,String,required1"
