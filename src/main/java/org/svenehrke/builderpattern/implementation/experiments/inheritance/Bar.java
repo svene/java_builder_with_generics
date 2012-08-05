@@ -1,4 +1,4 @@
-package org.svenehrke.builderpattern.implementation.sequence;
+package org.svenehrke.builderpattern.implementation.experiments.inheritance;
 
 /**
  * Example objects constructed with Builder pattern for objects with required fields

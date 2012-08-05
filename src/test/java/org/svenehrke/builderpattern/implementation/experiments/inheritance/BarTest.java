@@ -1,4 +1,4 @@
-package org.svenehrke.builderpattern.implementation.sequence;
+package org.svenehrke.builderpattern.implementation.experiments.inheritance;
 
 import org.junit.Test;
 
