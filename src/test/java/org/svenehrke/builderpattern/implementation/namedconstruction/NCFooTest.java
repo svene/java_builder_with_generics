@@ -33,20 +33,20 @@ public class NCFooTest {
 
 	@Test
 	public void example_with_requireds_only() {
-		NCFoo foo = NCFoo.required1("1").required2("2").required3("3");
+		NCFoo foo = NCFoo.required1("1").required2("2").required3("3").build();
 		verifyInitialization("1", "2", "3", null, null, null, foo);
 	}
 
 	@Test
 	public void example_with_optionals() {
-		NCFoo foo = NCFoo.required1("1").required2("2").required3("3").newOptional1("o1").newOptional2("o2").newOptional3("o3");
+		NCFoo foo = NCFoo.required1("1").required2("2").required3("3").optional1("o1").optional2("o2").optional3("o3").build();
 		verifyInitialization("1", "2", "3", "o1", "o2", "o3", foo);
 	}
 
 	@Test
 	public void create_new_from_existing_always_returns_new_object() {
 		NCFoo foo, foo1, foo2, foo3, foo4, foo5;
-		foo = NCFoo.required1("1").required2("2").required3("3").newOptional1("o1").newOptional2("o2").newOptional3("o3");
+		foo = NCFoo.required1("1").required2("2").required3("3").optional1("o1").optional2("o2").optional3("o3").build();
 
 		assertNotSame(foo, foo1 = foo.newRequired1("1a"));
 		assertNotSame(foo1, foo2 = foo1.newRequired2("2a"));
@@ -59,7 +59,7 @@ public class NCFooTest {
 	@Test
 	public void create_new_from_existing() {
 		NCFoo foo, foo1, foo2, foo3, foo4, foo5;
-		foo = NCFoo.required1("1").required2("2").required3("3").newOptional1("o1").newOptional2("o2").newOptional3("o3");
+		foo = NCFoo.required1("1").required2("2").required3("3").optional1("o1").optional2("o2").optional3("o3").build();
 		verifyInitialization("1a", "2", "3", "o1", "o2", "o3", foo1 = foo.newRequired1("1a"));
 		verifyInitialization("1a", "2a", "3", "o1", "o2", "o3", foo2 = foo1.newRequired2("2a"));
 		verifyInitialization("1a", "2a", "3a", "o1", "o2", "o3", foo3 = foo2.newRequired3("3a"));

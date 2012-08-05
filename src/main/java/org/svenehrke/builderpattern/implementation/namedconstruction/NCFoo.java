@@ -79,8 +79,26 @@ public class NCFoo {
 		public Builder3(NCFoo foo) {
 			this.foo = foo;
 		}
-		public NCFoo required3(String v) {
-			return foo.newRequired3(v);
+		public OptionalBuilder required3(String v) {
+			return new OptionalBuilder(foo.newRequired3(v));
+		}
+	}
+	public static class OptionalBuilder {
+		NCFoo foo;
+		public OptionalBuilder(NCFoo foo) {
+			this.foo = foo;
+		}
+		public NCFoo build() {
+			return foo;
+		}
+		public OptionalBuilder optional1(String v) {
+			return new OptionalBuilder(foo.newOptional1(v));
+		}
+		public OptionalBuilder optional2(String v) {
+			return new OptionalBuilder(foo.newOptional2(v));
+		}
+		public OptionalBuilder optional3(String v) {
+			return new OptionalBuilder(foo.newOptional3(v));
 		}
 	}
 }
