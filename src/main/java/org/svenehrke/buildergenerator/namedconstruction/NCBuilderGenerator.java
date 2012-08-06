@@ -1,13 +1,17 @@
 package org.svenehrke.buildergenerator.namedconstruction;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class NCBuilderGenerator {
 	private final List<String> lines;
 	private final InputData inputData;
+	private final Map<String, String> defaultValues = new HashMap<String, String>() {{
+		put("String", "");
+		put("int", "0");
+		put("double", "0.0");
+		put("float", "0.0");
+		put("char", "'-'");
+	}};
 
 	// For testing:
 	NCBuilderGenerator(String... lines) {
@@ -28,6 +32,7 @@ public class NCBuilderGenerator {
 		sa.addAll(constructor());
 		sa.addAll(getters());
 		sa.addAll(newInitilizers());
+		sa.addAll(builders());
 
 		sa.add("}");
 		return toText(sa);
@@ -118,4 +123,35 @@ public class NCBuilderGenerator {
 		}
 		return result;
 	}
+
+	private List<String> builders() {
+		List<String> result = new ArrayList<String>();
+
+
+		// required attributes:
+		if (inputData.getRequiredAttributes().size() > 0) {
+			result.add("");
+			final AttributeDefinition ad = inputData.requiredAttributes.get(0);
+			result.add(String.format("\tpublic static Builder%d %s(%s value) {", 2, ad.getName(), ad.getType()));
+			result.add(String.format(String.format("\t\treturn new Builder%d(new %s(value, \"\", \"\"));", 2, inputData.className)));
+			result.add("\t}");
+
+			int i = 2;
+			if (inputData.getRequiredAttributes().size() > 0) {
+				for (AttributeDefinition ad2 : inputData.getRequiredAttributes().subList(1, inputData.getRequiredAttributes().size())) {
+					result.add(String.format("\tpublic static class Builder%d {", i));
+					result.add(String.format("\t\t%s obj;", inputData.className));
+					result.add(String.format("\t\tpublic Builder%d(%s obj) {", i, inputData.className));
+					result.add(String.format("\t\t\tthis.obj = obj;"));
+					result.add(String.format("\t\t}"));
+					result.add(String.format("\t}"));
+
+					i++;
+				}
+			}
+		}
+
+		return result;
+	}
+
 }

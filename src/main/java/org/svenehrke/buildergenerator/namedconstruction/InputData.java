@@ -11,6 +11,9 @@ class InputData {
 
 	public String className;
 	public List<AttributeDefinition> attributeDefinitions = new ArrayList<AttributeDefinition>();
+	public List<AttributeDefinition> requiredAttributes = new ArrayList<AttributeDefinition>();
+	public List<AttributeDefinition> optionalAttributes = new ArrayList<AttributeDefinition>();
+	private int numberOfRequiredAttributes;
 
 	static InputData parse(String... lines) {
 		return parse(Arrays.asList(lines));
@@ -23,11 +26,16 @@ class InputData {
 		for (String line : lines.subList(1, lines.size())) {
 			ln++;
 			try {
-				result.attributeDefinitions.add(AttributeDefinition.parse(line));
+				final AttributeDefinition ad = AttributeDefinition.parse(line);
+				(ad.isRequired() ? result.requiredAttributes : result.optionalAttributes).add(ad);
+				result.attributeDefinitions.add(ad);
+
 			} catch (ParseException e) {
 				throw new ParseException(String.format("ERROR (line %d): '%s'", ln, line), e);
 			}
 		}
+
+		result.numberOfRequiredAttributes = numberOfRequiredAttributes(result.attributeDefinitions);
 		return result;
 	}
 
@@ -41,6 +49,24 @@ class InputData {
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
+		}
+		return result;
+	}
+
+	public List<AttributeDefinition> getRequiredAttributes() {
+		return requiredAttributes;
+	}
+
+	public List<AttributeDefinition> getOptionalAttributes() {
+		return optionalAttributes;
+	}
+
+	private static int numberOfRequiredAttributes(final List<AttributeDefinition> aAttributeDefinitions) {
+		int result = 0;
+		for (AttributeDefinition ad : aAttributeDefinitions) {
+			if (ad.isRequired()) {
+				result++;
+			}
 		}
 		return result;
 	}

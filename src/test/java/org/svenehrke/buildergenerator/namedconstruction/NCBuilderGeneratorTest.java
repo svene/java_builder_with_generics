@@ -62,6 +62,11 @@ public class NCBuilderGeneratorTest {
 				"\tpublic Foo newRequired1(String value) {",
 				"\t\treturn new Foo(value);",
 				"\t}",
+				"",
+				"\tpublic static Builder2 required1(String value) {",
+				"\t\treturn new Builder2(new Foo(value, \"\", \"\"));",
+				"\t}",
+
 				"}"
 			),
 			new NCBuilderGenerator("Foo", "R,String,required1").generate());
@@ -116,6 +121,16 @@ public class NCBuilderGeneratorTest {
 				"\t}",
 				"\tpublic Foo newOptional3(double value) {",
 				"\t\treturn new Foo(required1, required2, optional1, optional2, value);",
+				"\t}",
+				"",
+				"\tpublic static Builder2 required1(String value) {",
+				"\t\treturn new Builder2(new Foo(value, \"\", \"\"));",
+				"\t}",
+				"\tpublic static class Builder2 {",
+				"\t\tFoo obj;",
+				"\t\tpublic Builder2(Foo obj) {",
+				"\t\t\tthis.obj = obj;",
+				"\t\t}",
 				"\t}",
 				"}"
 			),
