@@ -128,10 +128,24 @@ public class NCBuilderGenerator {
 		return result;
 	}
 
-	private List<String> builders() {
+	List<String> builders() {
 		List<String> result = new ArrayList<String>();
 
+		if (inputData.requiredAttributes.size() + inputData.optionalAttributes.size() > 0) {
+			result.add("");
+		}
+
+		if (inputData.requiredAttributes.size() == 1) {
+			if (inputData.optionalAttributes.size() == 0) {
+				final AttributeDefinition ad = inputData.requiredAttributes.get(0);
+				result.add(String.format("\tpublic static %s required1(%s value) {", inputData.className, ad.getType()));
+				result.add(String.format("\t\treturn new %s(value);", inputData.className));
+				result.add(String.format("\t}"));
+			}
+		}
+
 		// required attributes:
+/*
 		if (inputData.getRequiredAttributes().size() > 0) {
 			result.add("");
 			final AttributeDefinition ad = inputData.requiredAttributes.get(0);
@@ -153,6 +167,7 @@ public class NCBuilderGenerator {
 				}
 			}
 		}
+*/
 
 		return result;
 	}

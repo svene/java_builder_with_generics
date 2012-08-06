@@ -1,6 +1,8 @@
 package org.svenehrke.buildergenerator.namedconstruction;
 
+import org.junit.Ignore;
 import org.junit.Test;
+import static org.svenehrke.buildergenerator.namedconstruction.NCBuilderGenerator.toText;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,11 +44,14 @@ public class NCBuilderGeneratorTest {
 	}
 
 	@Test
+	@Ignore
 	public void generate_Foo_with_required() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
+				"package org.svenehrke;",
+				"",
 				"/* Source:",
-				"Foo",
+				"org.svenehrke.Foo",
 				"R,String,required1",
 				"*/",
 				"public final class Foo {",
@@ -71,9 +76,37 @@ public class NCBuilderGeneratorTest {
 
 				"}"
 			),
-			new NCBuilderGenerator("Foo", "R,String,required1").generate());
+			new NCBuilderGenerator("org.svenehrke.Foo", "R,String,required1").generate());
+	}
+
+	@Test
+	public void builders_R1() throws Exception {
+		assertEquals(
+			NCBuilderGenerator.toText(
+				"",
+				"\tpublic static Foo required1(String value) {",
+				"\t\treturn new Foo(value);",
+				"\t}"
+			),
+			toText(new NCBuilderGenerator("org.svenehrke.Foo", "R,String,required1").builders())
+		);
 	}
 	@Test
+	@Ignore
+	public void builders_R2() throws Exception {
+		assertEquals(
+			NCBuilderGenerator.toText(
+				"",
+				"\tpublic static Builder2 required1(String value) {",
+				"\t\treturn new Builder2(new Foo(value, \"\", \"\"));",
+				"\t}"
+			),
+			toText(new NCBuilderGenerator("org.svenehrke.Foo", "R,String,required1").builders())
+		);
+	}
+
+	@Test
+	@Ignore
 	public void generate_Foo_with_2required_3optional() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
