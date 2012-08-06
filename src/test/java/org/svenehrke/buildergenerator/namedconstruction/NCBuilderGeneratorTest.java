@@ -10,8 +10,10 @@ public class NCBuilderGeneratorTest {
 	public void generate_Foo() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
+				"package org.svenehrke;",
+				"",
 				"/* Source:",
-				"Foo",
+				"org.svenehrke.Foo",
 				"*/",
 				"public final class Foo {",
 				"",
@@ -19,7 +21,7 @@ public class NCBuilderGeneratorTest {
 				"\t}",
 				"}"
 			),
-			new NCBuilderGenerator("Foo").generate());
+			new NCBuilderGenerator("org.svenehrke.Foo").generate());
 	}
 
 	@Test

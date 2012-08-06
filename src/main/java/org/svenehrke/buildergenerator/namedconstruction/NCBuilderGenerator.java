@@ -24,6 +24,10 @@ public class NCBuilderGenerator {
 
 	public String generate() {
 		List<String> sa = new ArrayList<String>();
+		if (!inputData.pgkName.isEmpty()) {
+			sa.add(String.format("package %s;", inputData.pgkName));
+			sa.add("");
+		}
 		sa.add("/* Source:");
 		sa.addAll(lines);
 		sa.add("*/");
@@ -126,7 +130,6 @@ public class NCBuilderGenerator {
 
 	private List<String> builders() {
 		List<String> result = new ArrayList<String>();
-
 
 		// required attributes:
 		if (inputData.getRequiredAttributes().size() > 0) {

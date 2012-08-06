@@ -9,6 +9,7 @@ import java.util.List;
 
 class InputData {
 
+	public String pgkName;
 	public String className;
 	public List<AttributeDefinition> attributeDefinitions = new ArrayList<AttributeDefinition>();
 	public List<AttributeDefinition> requiredAttributes = new ArrayList<AttributeDefinition>();
@@ -21,7 +22,16 @@ class InputData {
 	static InputData parse(List<String> lines) {
 		final InputData result = new InputData();
 		// 1. line:
-		result.className = lines.get(0).trim();
+		final String firstLine = lines.get(0).trim();
+		int idx = firstLine.lastIndexOf(".");
+		if (idx == -1) {
+			result.pgkName = "";
+			result.className = firstLine;
+		}
+		else {
+			result.pgkName = firstLine.substring(0, idx);
+			result.className = firstLine.substring(idx + 1);
+		}
 		int ln = 0;
 		for (String line : lines.subList(1, lines.size())) {
 			ln++;
