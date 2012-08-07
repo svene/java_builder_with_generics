@@ -6,7 +6,7 @@ public class NCBuilderGenerator {
 	private final List<String> lines;
 	private final InputData inputData;
 	private final Map<String, String> defaultValues = new HashMap<String, String>() {{
-		put("String", "");
+		put("String", "\"\"");
 		put("int", "0");
 		put("double", "0.0");
 		put("float", "0.0");
@@ -89,7 +89,7 @@ public class NCBuilderGenerator {
 	public static String toText(List<String> lines) {
 		String result = "";
 		for (String line : lines) {
-			result += line + "\n";
+			result += line + (line.endsWith("\n") ? "" : "\n");
 		}
 		return result;
 	}
@@ -131,43 +131,118 @@ public class NCBuilderGenerator {
 	List<String> builders() {
 		List<String> result = new ArrayList<String>();
 
-		if (inputData.requiredAttributes.size() + inputData.optionalAttributes.size() > 0) {
-			result.add("");
-		}
+		final int cr = inputData.requiredAttributes.size();
+		final int co = inputData.optionalAttributes.size();
+		final String className = inputData.className;
 
-		if (inputData.requiredAttributes.size() == 1) {
-			if (inputData.optionalAttributes.size() == 0) {
+		if (cr + co == 0) {
+			return result;
+		}
+		result.add("");
+
+		int idx = 0;
+		if (cr == 1) {
+			final AttributeDefinition ad = inputData.requiredAttributes.get(idx);
+
+			String s = NCBuilderGenerator.toText(
+				"\tpublic static OptionalBuilder ATTRIBUTE(TYPE value) {",
+				"\t\treturn new OptionalBuilder(new CLASSNAME(value));",
+				"\t}"
+			);
+			s = s
+				.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
+				.replaceAll("TYPE", ad.getType())
+				.replaceAll("CLASSNAME", className);
+
+			result.add(s);
+		}
+		else if (cr > 1) {
+			// First one gets a static creation routine:
+			if (idx == 0) {
 				final AttributeDefinition ad = inputData.requiredAttributes.get(0);
-				result.add(String.format("\tpublic static %s required1(%s value) {", inputData.className, ad.getType()));
-				result.add(String.format("\t\treturn new %s(value);", inputData.className));
-				result.add(String.format("\t}"));
+				String s = NCBuilderGenerator.toText(
+					"\tpublic static BUILDER ATTRIBUTE(TYPE value) {",
+					"\t\treturn new BUILDER(new CLASSNAME(valueDEFAULT_VALUES));",
+					"\t}"
+				);
+				s = s
+					.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
+					.replaceAll("TYPE", ad.getType())
+					.replaceAll("CLASSNAME", className)
+					.replaceAll("DEFAULT_VALUES",
+						defaultValuesForAttributes(inputData.requiredAttributes.subList(1, inputData.requiredAttributes.size())))
+					.replaceAll("BUILDER", "Builder" + Integer.toString(idx + 2));
+
+				result.add(s);
 			}
-		}
+			// for all attributes except first and last:
+			for (AttributeDefinition ad : inputData.attributeDefinitions.subList(1, cr - 1)) {
+				String s = NCBuilderGenerator.toText(
+					 "\tpublic static class BUILDER {"
+					,"\t\tCLASSNAME obj;"
+					,"\t\tpublic BUILDER(CLASSNAME obj) {"
+					,"\t\t\tthis.obj = obj;"
+					,"\t\t}"
+					,"\tpublic NEXT_BUILDER ATTRIBUTE(TYPE value) {"
+					,"\t\treturn new NEXT_BUILDER(new CLASSNAME(value));"
+					,"\t}"
+				);
+				s = s
+					.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
+					.replaceAll("TYPE", ad.getType())
+					.replaceAll("CLASSNAME", className)
+					.replaceAll("BUILDER", "Builder" + Integer.toString(idx + 2))
+					.replaceAll("NEXT_BUILDER", "Builder" + Integer.toString(idx + 3));
 
-		// required attributes:
-/*
-		if (inputData.getRequiredAttributes().size() > 0) {
-			result.add("");
-			final AttributeDefinition ad = inputData.requiredAttributes.get(0);
-			result.add(String.format("\tpublic static Builder%d %s(%s value) {", 2, ad.getName(), ad.getType()));
-			result.add(String.format(String.format("\t\treturn new Builder%d(new %s(value, \"\", \"\"));", 2, inputData.className)));
-			result.add("\t}");
-
-			int i = 2;
-			if (inputData.getRequiredAttributes().size() > 0) {
-				for (AttributeDefinition ad2 : inputData.getRequiredAttributes().subList(1, inputData.getRequiredAttributes().size())) {
-					result.add(String.format("\tpublic static class Builder%d {", i));
-					result.add(String.format("\t\t%s obj;", inputData.className));
-					result.add(String.format("\t\tpublic Builder%d(%s obj) {", i, inputData.className));
-					result.add(String.format("\t\t\tthis.obj = obj;"));
-					result.add(String.format("\t\t}"));
-					result.add(String.format("\t}"));
-
-					i++;
-				}
+				result.add(s);
 			}
+			// Handle last attribute:
+			final AttributeDefinition ad = inputData.requiredAttributes.get(cr - 1);
+			String s = NCBuilderGenerator.toText(
+				 "\tpublic static class BUILDER {"
+				,"\t\tCLASSNAME obj;"
+				,"\t\tpublic BUILDER(CLASSNAME obj) {"
+				,"\t\t\tthis.obj = obj;"
+				,"\t\t}"
+				,"\t\tpublic OptionalBuilder ATTRIBUTE(TYPE value) {"
+				,"\t\t\treturn new OptionalBuilder(obj.newATTRIBUTE(value));"
+				,"\t\t}"
+				,"\t}"
+			);
+			s = s
+				.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
+				.replaceAll("TYPE", ad.getType())
+				.replaceAll("CLASSNAME", className)
+				.replaceAll("BUILDER", "Builder" + Integer.toString(idx + 2));
+
+			result.add(s);
 		}
-*/
+		result.add(String.format("\tpublic static class OptionalBuilder {"));
+		result.add(String.format("\t\tFoo obj;"));
+		result.add(String.format("\t\tpublic OptionalBuilder(%s obj) {", className));
+		result.add(String.format("\t\t\tthis.obj = obj;"));
+		result.add(String.format("\t\t}"));
+		result.add(String.format("\t\tpublic Foo build() {"));
+		result.add(String.format("\t\t\treturn obj;"));
+		result.add(String.format("\t\t}"));
+
+		return result;
+	}
+
+	private String defaultValuesForAttributes(List<AttributeDefinition> attributes) {
+		String result = "";
+		for (AttributeDefinition ad : attributes) {
+			result += ", " + defaultValues.get(ad.getType());
+		}
+		return result;
+	}
+
+	private List<String> builderForLastRequired(String aClassName, final AttributeDefinition ad) {
+		List<String> result = new ArrayList<String>();
+
+		result.add(String.format("\tpublic static OptionalBuilder %s(%s value) {", ad.getName(), ad.getType()));
+		result.add(String.format("\t\treturn new OptionalBuilder(new %s(value));", aClassName));
+		result.add(String.format("\t}"));
 
 		return result;
 	}

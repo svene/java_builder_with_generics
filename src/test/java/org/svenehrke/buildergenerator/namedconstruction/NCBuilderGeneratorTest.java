@@ -81,27 +81,39 @@ public class NCBuilderGeneratorTest {
 
 	@Test
 	public void builders_R1() throws Exception {
+
 		assertEquals(
 			NCBuilderGenerator.toText(
 				"",
-				"\tpublic static Foo required1(String value) {",
-				"\t\treturn new Foo(value);",
-				"\t}"
-			),
+				"\tpublic static OptionalBuilder Required1(String value) {",
+				"\t\treturn new OptionalBuilder(new Foo(value));",
+				"\t}",
+				optionalBuilderText()
+				),
 			toText(new NCBuilderGenerator("org.svenehrke.Foo", "R,String,required1").builders())
 		);
 	}
+
 	@Test
-	@Ignore
 	public void builders_R2() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
 				"",
-				"\tpublic static Builder2 required1(String value) {",
-				"\t\treturn new Builder2(new Foo(value, \"\", \"\"));",
-				"\t}"
+				"\tpublic static Builder2 Required1(String value) {",
+				"\t\treturn new Builder2(new Foo(value, 0));",
+				"\t}",
+				"\tpublic static class Builder2 {",
+				"\t\tFoo obj;",
+				"\t\tpublic Builder2(Foo obj) {",
+				"\t\t\tthis.obj = obj;",
+				"\t\t}",
+				"\t\tpublic OptionalBuilder Required2(int value) {",
+				"\t\t\treturn new OptionalBuilder(obj.newRequired2(value));",
+				"\t\t}",
+				"\t}",
+				optionalBuilderText()
 			),
-			toText(new NCBuilderGenerator("org.svenehrke.Foo", "R,String,required1").builders())
+			toText(new NCBuilderGenerator("org.svenehrke.Foo", "R,String,required1", "R,int,required2").builders())
 		);
 	}
 
@@ -176,6 +188,19 @@ public class NCBuilderGeneratorTest {
 				, "O,BigInteger,optional2"
 				, "O,double,optional3"
 			).generate());
+	}
+
+	private String optionalBuilderText() {
+		return NCBuilderGenerator.toText(
+			"\tpublic static class OptionalBuilder {",
+			"\t\tFoo obj;",
+			"\t\tpublic OptionalBuilder(Foo obj) {",
+			"\t\t\tthis.obj = obj;",
+			"\t\t}",
+			"\t\tpublic Foo build() {",
+			"\t\t\treturn obj;",
+			"\t\t}"
+		);
 	}
 
 }
