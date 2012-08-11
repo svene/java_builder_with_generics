@@ -2,6 +2,9 @@ package org.svenehrke.buildergenerator.namedconstruction;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.Arrays;
+
 import static org.svenehrke.buildergenerator.namedconstruction.NCBuilderGenerator.toText;
 
 import static org.junit.Assert.assertEquals;
@@ -116,6 +119,62 @@ public class NCBuilderGeneratorTest {
 			toText(new NCBuilderGenerator("org.svenehrke.Foo", "R,String,required1", "R,int,required2").builders())
 		);
 	}
+	@Test
+	public void builders_R2O1() throws Exception {
+		assertEquals(
+			NCBuilderGenerator.toText(
+				"",
+				"\tpublic static Builder2 Required1(String value) {",
+				"\t\treturn new Builder2(new Foo(value, 0));",
+				"\t}",
+				"\tpublic static class Builder2 {",
+				"\t\tFoo obj;",
+				"\t\tpublic Builder2(Foo obj) {",
+				"\t\t\tthis.obj = obj;",
+				"\t\t}",
+				"\t\tpublic OptionalBuilder Required2(int value) {",
+				"\t\t\treturn new OptionalBuilder(obj.newRequired2(value));",
+				"\t\t}",
+				"\t}",
+				"\tpublic static class OptionalBuilder {",
+				"\t\tFoo obj;",
+				"\t\tpublic OptionalBuilder(Foo obj) {",
+				"\t\t\tthis.obj = obj;",
+				"\t\t}",
+				"\t\tpublic Foo build() {",
+				"\t\t\treturn obj;",
+				"\t\t}"
+			),
+			toText(new NCBuilderGenerator(
+				"org.svenehrke.Foo"
+				,"R,String,required1"
+				,"R,int,required2"
+				,"O,int,optional1"
+			).builders())
+		);
+	}
+
+	@Test
+	public void testOptionalBuilderRoutine() throws Exception {
+		assertEquals(
+			NCBuilderGenerator.toText(Arrays.asList(
+				"\t\tpublic OptionalBuilder Optional1(int value) {"
+				, "\t\t\treturn new OptionalBuilder(obj.newRequired2(value));"
+				, "\t\t}"
+			))
+			,
+			optionalBuilderRoutineText(AttributeDefinition.parse("O,int,optional1"))
+		);
+	}
+
+	private String optionalBuilderRoutineText(AttributeDefinition aAttributeDefinition) {
+		return NCBuilderGenerator.toText(Arrays.asList(
+			"\t\tpublic OptionalBuilder ATTRIBUTE(int value) {"
+			, "\t\t\treturn new OptionalBuilder(obj.newRequired2(value));"
+			, "\t\t}")
+			).replaceAll("ATTRIBUTE", aAttributeDefinition.getCapitalizedName()
+		);
+	}
 
 	@Test
 	@Ignore
@@ -191,6 +250,7 @@ public class NCBuilderGeneratorTest {
 	}
 
 	private String optionalBuilderText() {
+//	private String optionalBuilderText(AttributeDefinition... aAttributeDefinitions) {
 		return NCBuilderGenerator.toText(
 			"\tpublic static class OptionalBuilder {",
 			"\t\tFoo obj;",
