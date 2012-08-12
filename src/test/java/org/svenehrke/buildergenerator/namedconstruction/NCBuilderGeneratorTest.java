@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.junit.Assert.fail;
 import static org.svenehrke.buildergenerator.namedconstruction.NCBuilderGenerator.toText;
 
 import static org.junit.Assert.assertEquals;
@@ -83,6 +84,46 @@ public class NCBuilderGeneratorTest {
 	}
 
 	@Test
+	public void firstRequiredRoutineText_R1() throws Exception {
+		assertEquals(
+			NCBuilderGenerator.toText(
+				"\tpublic static OptionalBuilder Required1(String value) {"
+				,"\t\treturn new OptionalBuilder(new Foo(value));"
+				,"\t}"
+				),
+
+			toText(NCBuilderGenerator.firstRequiredRoutineText(InputData.parse("Foo", "R,String,required1")))
+		);
+	}
+
+	@Test
+	public void firstRequiredRoutineText_R2() throws Exception {
+		assertEquals(
+			NCBuilderGenerator.toText(
+				"\tpublic static Builder1 Required1(String value) {"
+				,"\t\treturn new Builder1(new Foo(value, \"\"));"
+				,"\t}"
+				),
+
+			toText(NCBuilderGenerator.firstRequiredRoutineText(InputData.parse(
+				"Foo"
+				,"R,String,required1"
+				,"R,String,required2"
+			)))
+		);
+	}
+	@Test
+	public void firstRequiredRoutineText_O1() throws Exception {
+		try {
+			NCBuilderGenerator.firstRequiredRoutineText(InputData.parse("Foo", "O,String,optional1"));
+			fail("IllegalArgumentException expected");
+		}
+		catch (IllegalArgumentException e) {
+			assertEquals("at least one required argument required", e.getMessage());
+		}
+	}
+
+	@Test
 	public void builders_R1() throws Exception {
 
 		assertEquals(
@@ -98,16 +139,31 @@ public class NCBuilderGeneratorTest {
 	}
 
 	@Test
+	@Ignore
+	public void builder() throws Exception {
+		assertEquals(
+			NCBuilderGenerator.toText(Arrays.asList(
+				"\t\tpublic OptionalBuilder Required1(int value) {"
+				, "\t\t\treturn new OptionalBuilder(obj.newOptional1(value));"
+				, "\t\t}"
+			))
+			,
+			NCBuilderGenerator.builderText(AttributeDefinition.parse("R,int,required2"), "Foo", 1)
+		);
+
+	}
+
+	@Test
 	public void builders_R2() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
 				"",
-				"\tpublic static Builder2 Required1(String value) {",
-				"\t\treturn new Builder2(new Foo(value, 0));",
+				"\tpublic static Builder1 Required1(String value) {",
+				"\t\treturn new Builder1(new Foo(value, 0));",
 				"\t}",
-				"\tpublic static class Builder2 {",
+				"\tpublic static class Builder1 {",
 				"\t\tFoo obj;",
-				"\t\tpublic Builder2(Foo obj) {",
+				"\t\tpublic Builder1(Foo obj) {",
 				"\t\t\tthis.obj = obj;",
 				"\t\t}",
 				"\t\tpublic OptionalBuilder Required2(int value) {",
@@ -120,16 +176,40 @@ public class NCBuilderGeneratorTest {
 		);
 	}
 	@Test
+	public void testOptionalBuilderRoutine() throws Exception {
+		assertEquals(
+			NCBuilderGenerator.toText(Arrays.asList(
+				"\t\tpublic OptionalBuilder Optional1(int value) {"
+				, "\t\t\treturn new OptionalBuilder(obj.newOptional1(value));"
+				, "\t\t}"
+			))
+			,
+			NCBuilderGenerator.optionalBuilderRoutineText(AttributeDefinition.parse("O,int,optional1"))
+		);
+
+		assertEquals(
+			NCBuilderGenerator.toText(Arrays.asList(
+				"\t\tpublic OptionalBuilder Optional3(BigDecimal value) {"
+				, "\t\t\treturn new OptionalBuilder(obj.newOptional3(value));"
+				, "\t\t}"
+			))
+			,
+			NCBuilderGenerator.optionalBuilderRoutineText(AttributeDefinition.parse("O,BigDecimal,optional3"))
+		);
+
+	}
+
+	@Test
 	public void builders_R2O1() throws Exception {
 		assertEquals(
 			NCBuilderGenerator.toText(
 				"",
-				"\tpublic static Builder2 Required1(String value) {",
-				"\t\treturn new Builder2(new Foo(value, 0));",
+				"\tpublic static Builder1 Required1(String value) {",
+				"\t\treturn new Builder1(new Foo(value, 0));",
 				"\t}",
-				"\tpublic static class Builder2 {",
+				"\tpublic static class Builder1 {",
 				"\t\tFoo obj;",
-				"\t\tpublic Builder2(Foo obj) {",
+				"\t\tpublic Builder1(Foo obj) {",
 				"\t\t\tthis.obj = obj;",
 				"\t\t}",
 				"\t\tpublic OptionalBuilder Required2(int value) {",
@@ -141,6 +221,7 @@ public class NCBuilderGeneratorTest {
 				"\t\tpublic OptionalBuilder(Foo obj) {",
 				"\t\t\tthis.obj = obj;",
 				"\t\t}",
+				NCBuilderGenerator.optionalBuilderRoutineText(AttributeDefinition.parse("O,int,optional1")),
 				"\t\tpublic Foo build() {",
 				"\t\t\treturn obj;",
 				"\t\t}"
@@ -151,28 +232,6 @@ public class NCBuilderGeneratorTest {
 				,"R,int,required2"
 				,"O,int,optional1"
 			).builders())
-		);
-	}
-
-	@Test
-	public void testOptionalBuilderRoutine() throws Exception {
-		assertEquals(
-			NCBuilderGenerator.toText(Arrays.asList(
-				"\t\tpublic OptionalBuilder Optional1(int value) {"
-				, "\t\t\treturn new OptionalBuilder(obj.newRequired2(value));"
-				, "\t\t}"
-			))
-			,
-			optionalBuilderRoutineText(AttributeDefinition.parse("O,int,optional1"))
-		);
-	}
-
-	private String optionalBuilderRoutineText(AttributeDefinition aAttributeDefinition) {
-		return NCBuilderGenerator.toText(Arrays.asList(
-			"\t\tpublic OptionalBuilder ATTRIBUTE(int value) {"
-			, "\t\t\treturn new OptionalBuilder(obj.newRequired2(value));"
-			, "\t\t}")
-			).replaceAll("ATTRIBUTE", aAttributeDefinition.getCapitalizedName()
 		);
 	}
 

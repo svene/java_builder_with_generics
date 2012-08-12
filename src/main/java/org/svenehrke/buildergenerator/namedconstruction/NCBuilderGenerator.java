@@ -5,7 +5,7 @@ import java.util.*;
 public class NCBuilderGenerator {
 	private final List<String> lines;
 	private final InputData inputData;
-	private final Map<String, String> defaultValues = new HashMap<String, String>() {{
+	static final Map<String, String> defaultValues = new HashMap<String, String>() {{
 		put("String", "\"\"");
 		put("int", "0");
 		put("double", "0.0");
@@ -20,6 +20,17 @@ public class NCBuilderGenerator {
 	public NCBuilderGenerator(List<String> lines) {
 		this.lines = lines;
 		inputData = InputData.parse(lines);
+	}
+
+	public static String optionalBuilderRoutineText(AttributeDefinition aAttributeDefinition) {
+		return NCBuilderGenerator.toText(Arrays.asList(
+			"\t\tpublic OptionalBuilder ATTRIBUTE(TYPE value) {"
+			, "\t\t\treturn new OptionalBuilder(obj.newATTRIBUTE(value));"
+			, "\t\t}")
+			)
+			.replaceAll("ATTRIBUTE", aAttributeDefinition.getCapitalizedName())
+			.replaceAll("TYPE", aAttributeDefinition.getType())
+		;
 	}
 
 	public String generate() {
@@ -141,87 +152,44 @@ public class NCBuilderGenerator {
 		result.add("");
 
 		int idx = 0;
-		if (cr == 1) {
-			final AttributeDefinition ad = inputData.requiredAttributes.get(idx);
-
-			String s = NCBuilderGenerator.toText(
-				"\tpublic static OptionalBuilder ATTRIBUTE(TYPE value) {",
-				"\t\treturn new OptionalBuilder(new CLASSNAME(value));",
-				"\t}"
-			);
-			s = s
-				.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
-				.replaceAll("TYPE", ad.getType())
-				.replaceAll("CLASSNAME", className);
-
-			result.add(s);
-		}
-		else if (cr > 1) {
+		int rCount = cr;
+		if (rCount >= 1) {
 			// First one gets a static creation routine:
-			if (idx == 0) {
-				final AttributeDefinition ad = inputData.requiredAttributes.get(0);
-				String s = NCBuilderGenerator.toText(
-					"\tpublic static BUILDER ATTRIBUTE(TYPE value) {",
-					"\t\treturn new BUILDER(new CLASSNAME(valueDEFAULT_VALUES));",
-					"\t}"
-				);
-				s = s
-					.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
-					.replaceAll("TYPE", ad.getType())
-					.replaceAll("CLASSNAME", className)
-					.replaceAll("DEFAULT_VALUES",
-						defaultValuesForAttributes(inputData.requiredAttributes.subList(1, inputData.requiredAttributes.size())))
-					.replaceAll("BUILDER", "Builder" + Integer.toString(idx + 2));
 
-				result.add(s);
-			}
+			result.add(firstRequiredRoutineText(inputData));
+			rCount--;
+
 			// for all attributes except first and last:
-			for (AttributeDefinition ad : inputData.attributeDefinitions.subList(1, cr - 1)) {
-				String s = NCBuilderGenerator.toText(
-					 "\tpublic static class BUILDER {"
-					,"\t\tCLASSNAME obj;"
-					,"\t\tpublic BUILDER(CLASSNAME obj) {"
-					,"\t\t\tthis.obj = obj;"
-					,"\t\t}"
-					,"\tpublic NEXT_BUILDER ATTRIBUTE(TYPE value) {"
-					,"\t\treturn new NEXT_BUILDER(new CLASSNAME(value));"
-					,"\t}"
-				);
-				s = s
+			if (rCount > 2) {
+				for (AttributeDefinition ad : inputData.requiredAttributes.subList(1, cr - 1)) {
+					idx++;
+					result.add(builderText(ad, className, idx));
+					rCount--;
+				}
+			}
+
+			// Handle last attribute:
+			if (rCount != 0) {
+				idx++;
+				final AttributeDefinition ad = inputData.requiredAttributes.get(cr - 1);
+				String s = lastBuilderText()
 					.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
 					.replaceAll("TYPE", ad.getType())
 					.replaceAll("CLASSNAME", className)
-					.replaceAll("BUILDER", "Builder" + Integer.toString(idx + 2))
-					.replaceAll("NEXT_BUILDER", "Builder" + Integer.toString(idx + 3));
+					.replaceAll("BUILDER", "Builder" + Integer.toString(idx));
 
 				result.add(s);
 			}
-			// Handle last attribute:
-			final AttributeDefinition ad = inputData.requiredAttributes.get(cr - 1);
-			String s = NCBuilderGenerator.toText(
-				 "\tpublic static class BUILDER {"
-				,"\t\tCLASSNAME obj;"
-				,"\t\tpublic BUILDER(CLASSNAME obj) {"
-				,"\t\t\tthis.obj = obj;"
-				,"\t\t}"
-				,"\t\tpublic OptionalBuilder ATTRIBUTE(TYPE value) {"
-				,"\t\t\treturn new OptionalBuilder(obj.newATTRIBUTE(value));"
-				,"\t\t}"
-				,"\t}"
-			);
-			s = s
-				.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
-				.replaceAll("TYPE", ad.getType())
-				.replaceAll("CLASSNAME", className)
-				.replaceAll("BUILDER", "Builder" + Integer.toString(idx + 2));
-
-			result.add(s);
 		}
 		result.add(String.format("\tpublic static class OptionalBuilder {"));
 		result.add(String.format("\t\tFoo obj;"));
 		result.add(String.format("\t\tpublic OptionalBuilder(%s obj) {", className));
 		result.add(String.format("\t\t\tthis.obj = obj;"));
 		result.add(String.format("\t\t}"));
+		// for all optional attributes:
+		for (AttributeDefinition ad : inputData.optionalAttributes) {
+			result.add(optionalBuilderRoutineText(ad));
+		}
 		result.add(String.format("\t\tpublic Foo build() {"));
 		result.add(String.format("\t\t\treturn obj;"));
 		result.add(String.format("\t\t}"));
@@ -229,7 +197,64 @@ public class NCBuilderGenerator {
 		return result;
 	}
 
-	private String defaultValuesForAttributes(List<AttributeDefinition> attributes) {
+	static String firstRequiredRoutineText(InputData inputData) {
+		if (inputData.requiredAttributes.size() == 0) throw new IllegalArgumentException("at least one required argument required");
+
+		AttributeDefinition ad = inputData.requiredAttributes.get(0);
+		String builder = inputData.requiredAttributes.size() == 1 ? "OptionalBuilder" : "Builder1";
+		String s = firstRequiredRoutineTemplate();
+		s = s
+			.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
+			.replaceAll("TYPE", ad.getType())
+			.replaceAll("CLASSNAME", inputData.className)
+			.replaceAll("DEFAULT_VALUES",
+				defaultValuesForAttributes(inputData.requiredAttributes.subList(1, inputData.requiredAttributes.size())))
+			.replaceAll("BUILDER", builder);
+		return s;
+	}
+
+	static String firstRequiredRoutineTemplate() {
+		return NCBuilderGenerator.toText(
+			"\tpublic static BUILDER ATTRIBUTE(TYPE value) {",
+			"\t\treturn new BUILDER(new CLASSNAME(valueDEFAULT_VALUES));",
+			"\t}"
+		);
+	}
+
+	static String builderText(AttributeDefinition ad, String className, int requiredAttributeNr) {
+		return NCBuilderGenerator.toText(
+			"\tpublic static class BUILDER {"
+			, "\t\tCLASSNAME obj;"
+			, "\t\tpublic BUILDER(CLASSNAME obj) {"
+			, "\t\t\tthis.obj = obj;"
+			, "\t\t}"
+			, "\tpublic NEXT_BUILDER ATTRIBUTE(TYPE value) {"
+			, "\t\treturn new NEXT_BUILDER(new CLASSNAME(value));"
+			, "\t}"
+		)
+			.replaceAll("ATTRIBUTE", ad.getCapitalizedName())
+			.replaceAll("TYPE", ad.getType())
+			.replaceAll("CLASSNAME", className)
+			.replaceAll("NEXT_BUILDER", "Builder" + Integer.toString(requiredAttributeNr + 1))
+			.replaceAll("BUILDER", "Builder" + Integer.toString(requiredAttributeNr))
+		;
+	}
+
+	private String lastBuilderText() {
+		return NCBuilderGenerator.toText(
+			"\tpublic static class BUILDER {"
+			, "\t\tCLASSNAME obj;"
+			, "\t\tpublic BUILDER(CLASSNAME obj) {"
+			, "\t\t\tthis.obj = obj;"
+			, "\t\t}"
+			, "\t\tpublic OptionalBuilder ATTRIBUTE(TYPE value) {"
+			, "\t\t\treturn new OptionalBuilder(obj.newATTRIBUTE(value));"
+			, "\t\t}"
+			, "\t}"
+		);
+	}
+
+	static String defaultValuesForAttributes(List<AttributeDefinition> attributes) {
 		String result = "";
 		for (AttributeDefinition ad : attributes) {
 			result += ", " + defaultValues.get(ad.getType());
